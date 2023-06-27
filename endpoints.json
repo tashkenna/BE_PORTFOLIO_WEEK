@@ -8,7 +8,7 @@
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
-    "format": "",
+     "format": "",
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
@@ -16,7 +16,6 @@
   "GET /api/articles": {
     "description": "serves an array of all topics",
     "queries": ["author", "topic", "sort_by", "order"],
-    "format": "",
     "exampleResponse": {
       "articles": [
         {
