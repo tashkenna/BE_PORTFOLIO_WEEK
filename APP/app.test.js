@@ -44,7 +44,7 @@ describe("GET /api/", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe("GET /api/articles:id", () => {
   it("Should return an article object by its ID", () => {
     return request(app)
       .get("/api/articles/1")
@@ -63,4 +63,20 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  it("Should return a 404 error when ID does not exist", ()=> {
+    return request(app)
+    .get("/api/articles/190")
+    .expect(404)
+    .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  })
+  it("Should return a 400 error when ID is invalid format", ()=> {
+    return request(app)
+    .get("/api/articles/onetwo")
+    .expect(400)
+    .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID");
+      });
+  })
 });
