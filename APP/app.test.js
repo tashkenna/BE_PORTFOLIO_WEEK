@@ -8,6 +8,7 @@ const {
 } = require("../db/data/test-data/index");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
+const descriptions = require("../endpoints.json")
 
 beforeEach(() => {
   return seed({ articleData, commentData, topicData, userData });
@@ -31,3 +32,16 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+describe("GET /api/", () => {
+    it("Should respond with an object describing all the available endpoints on the API", () => {
+      return request(app)
+        .get("/api/")
+        .expect(200)
+        .then(({ body }) => {
+         expect(body).toEqual(descriptions)
+        });
+    });
+  });
+  
+
