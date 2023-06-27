@@ -31,3 +31,20 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+describe("GET /api/", () => {
+    it("Should respond with an object describing all the available endpoints on the API", () => {
+      return request(app)
+        .get("/api/")
+        .expect(200)
+        .then(({ body }) => {
+         Object.values(body).forEach((endpoint) => {
+            expect(endpoint).toHaveProperty("description");
+            expect(endpoint).toHaveProperty("queries");
+            expect(endpoint).toHaveProperty("format");
+            expect(endpoint).toHaveProperty("exampleResponse");
+          });
+        });
+    });
+  });
+  
