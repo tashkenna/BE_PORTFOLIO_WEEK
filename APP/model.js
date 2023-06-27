@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const endpoints = require("../endpoints.json");
 
 exports.selectTopics = () => {
   return db
@@ -16,7 +15,7 @@ FROM
     });
 };
 
-exports.selectArticles = (id) => {
+exports.selectArticlesByID = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [id])
     .then(({ rows }) => {

@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, getEndpoints, getArticles } = require("./controller");
+const { getTopics, getEndpoints, getArticlesByID } = require("./controller");
 const app = express();
 const descriptions = require("../endpoints.json");
 
@@ -9,7 +9,9 @@ app.get("/api/", (req, res) => {
 
 app.get("/api/topics", getTopics);
 
-app.get("/api/articles/:article_id", getArticles);
+
+
+app.get("/api/articles/:article_id", getArticlesByID);
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
