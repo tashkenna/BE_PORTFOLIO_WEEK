@@ -1,6 +1,7 @@
 const { selectTopics, selectArticlesByID, selectArticles } = require("./model");
 const descriptions = require("../endpoints.json");
 
+
 exports.getApi = (req, res) => {
   res.status(200).send(descriptions)
 }
