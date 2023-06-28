@@ -47,4 +47,3 @@ exports.getCommentsByArticleID = (req, res, next) => {
   });
 }
 
-

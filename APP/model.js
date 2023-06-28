@@ -15,6 +15,8 @@ FROM
     });
 };
 
+
+
 exports.selectArticles = () => {
   return db
     .query(
@@ -70,3 +72,4 @@ WHERE
     return rows;
   })
 }
+

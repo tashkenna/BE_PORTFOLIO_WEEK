@@ -13,8 +13,6 @@ app.get("/api/articles/:article_id", getArticlesByID);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
 
-
-
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
       res.status(400).send({ msg: "Invalid ID" });
