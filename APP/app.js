@@ -1,17 +1,19 @@
 const express = require("express");
-const { getTopics, getEndpoints, getArticlesByID, postArticleComments } = require("./controller");
+const { getTopics, getEndpoints, getArticlesByID, getArticles, getApi, getCommentsByArticleID } = require("./controller");
 const app = express();
 const descriptions = require("../endpoints.json");
 
-app.get("/api/", (req, res) => {
-  res.status(200).send(descriptions);
-});
+app.get("/api/", getApi)
 
 app.get("/api/topics", getTopics);
 
+app.get("/api/articles", getArticles)
+
 app.get("/api/articles/:article_id", getArticlesByID);
 
-app.post("/api/articles/:article_id/comments", postArticleComments)
+app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
+
+
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {

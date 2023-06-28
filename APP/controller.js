@@ -1,5 +1,10 @@
-const { selectTopics, selectArticlesByID, insertIntoRestaurants } = require("./model");
+const { selectTopics, selectArticlesByID, selectArticles, selectCommentsByArticleID } = require("./model");
+const descriptions = require("../endpoints.json");
 
+
+exports.getApi = (req, res) => {
+  res.status(200).send(descriptions)
+}
 exports.getTopics = (req, res) => {
   selectTopics()
     .then((topics) => {
@@ -9,6 +14,16 @@ exports.getTopics = (req, res) => {
       console.log(err);
     });
 };
+
+exports.getArticles = (req, res) => {
+  selectArticles()
+  .then((articles) => {
+    res.status(200).send({ articles })
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+}
 
 exports.getArticlesByID = (req, res, next) => {
   const { article_id } = req.params;
@@ -21,10 +36,15 @@ exports.getArticlesByID = (req, res, next) => {
   });
 }
 
-exports.postArticleComments = (req, res, next) => {
-  const body = req.body; 
-  insertIntoRestaurants(body)
-  .then((response) => {
-    res.status(201).send({comment: response})
+exports.getCommentsByArticleID = (req, res, next) => {
+  const {article_id} = req.params;
+  selectCommentsByArticleID(article_id)
+  .then((comments) => {
+    res.status(200).send({comments})
   })
+  .catch((err) => {
+    next(err)
+  });
 }
+
+
