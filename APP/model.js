@@ -25,3 +25,7 @@ exports.selectArticlesByID = (id) => {
       return rows[0];
     });
 };
+
+exports.insertIntoRestaurants = (body) => {
+  
+}

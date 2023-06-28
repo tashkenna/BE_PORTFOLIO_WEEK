@@ -1,4 +1,4 @@
-const { selectTopics, selectArticlesByID } = require("./model");
+const { selectTopics, selectArticlesByID, insertIntoRestaurants } = require("./model");
 
 exports.getTopics = (req, res) => {
   selectTopics()
@@ -19,4 +19,12 @@ exports.getArticlesByID = (req, res, next) => {
   .catch((err) => {
     next(err)
   });
+}
+
+exports.postArticleComments = (req, res, next) => {
+  const body = req.body; 
+  insertIntoRestaurants(body)
+  .then((response) => {
+    res.status(201).send({comment: response})
+  })
 }
