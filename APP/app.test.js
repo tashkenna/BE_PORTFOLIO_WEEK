@@ -124,6 +124,7 @@ describe("GET /app/articles/:article_id/comments", () => {
           expect(comment).toHaveProperty("author");
           expect(comment).toHaveProperty("body");
           expect(comment).toHaveProperty("article_id");
+          expect(comment.article_id).toEqual(1)
         });
       });
   });
@@ -136,4 +137,22 @@ describe("GET /app/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Not found");
       });
   });
+
+  it("Responds with a 400 error when ID is in an invalid format", () => {
+    return request(app)
+      .get("/api/articles/invalid/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID");
+      });
+  });
+
+  it("Responds with a 400 error when a valid article is requested but it doesn't have any comments yet", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  })
 });
