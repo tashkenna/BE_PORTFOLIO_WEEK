@@ -1,5 +1,10 @@
-const { selectTopics, selectArticlesByID, selectArticles } = require("./model");
+const { selectTopics, selectArticlesByID, selectArticles, selectCommentsByArticleID } = require("./model");
+const descriptions = require("../endpoints.json");
 
+
+exports.getApi = (req, res) => {
+  res.status(200).send(descriptions)
+}
 exports.getTopics = (req, res) => {
   selectTopics()
     .then((topics) => {
@@ -25,6 +30,17 @@ exports.getArticlesByID = (req, res, next) => {
   selectArticlesByID(article_id)
   .then((article) => {
     res.status(200).send({article})
+  })
+  .catch((err) => {
+    next(err)
+  });
+}
+
+exports.getCommentsByArticleID = (req, res, next) => {
+  const {article_id} = req.params;
+  selectCommentsByArticleID(article_id)
+  .then((comments) => {
+    res.status(200).send({comments})
   })
   .catch((err) => {
     next(err)
