@@ -54,8 +54,11 @@ exports.getCommentsByArticleID = (req, res, next) => {
 
 exports.postCommentByArticleID = (req, res, next) => {
   const { article_id } = req.params;
-  const body = req.body;
-  insertCommentByArticleID(article_id, body)
+  const {username, body, ...extraProp} = req.body
+  if (Object.keys(extraProp).length > 0) {
+    return res.status(400).send({msg: "Bad request, extra properties"})
+  }
+  insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
     })

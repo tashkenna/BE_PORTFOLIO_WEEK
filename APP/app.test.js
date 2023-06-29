@@ -77,7 +77,7 @@ describe("GET /api/articles:id", () => {
       .get("/api/articles/onetwo")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID");
+        expect(body.msg).toBe("Invalid ID type");
       });
   });
 });
@@ -144,7 +144,7 @@ describe("GET /app/articles/:article_id/comments", () => {
       .get("/api/articles/invalid/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID");
+        expect(body.msg).toBe("Invalid ID type");
       });
   });
 
@@ -203,6 +203,46 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({body})=> {
         expect(body.msg).toBe("Username does not exist");
+      });
+    })
+
+    it("Should return a 400 error if ID is invalid type", () => {
+      return request(app)
+      .post("/api/articles/invalid/comments")
+      .send({
+        username: "lurker",
+        body: "TestComment",
+      })
+      .expect(400)
+      .then(({body})=> {
+        expect(body.msg).toBe("Invalid ID type");
+      });
+    })
+
+    it("Should return a 400 error if ID is valid type but doesn't exist", () => {
+      return request(app)
+      .post("/api/articles/99999/comments")
+      .send({
+        username: "lurker",
+        body: "TestComment",
+      })
+      .expect(400)
+      .then(({body})=> {
+        expect(body.msg).toBe("ID does not exist");
+      });
+    })
+
+    it("Responds with a 400 error if request is made with a valid body, username, but includes and extra property", () => {
+      return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "lurker",
+        body: "TestComment",
+        more: "Things"
+      })
+      .expect(400)
+      .then(({body})=> {
+        expect(body.msg).toBe("Bad request, extra properties");
       });
     })
     })

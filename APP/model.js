@@ -80,8 +80,8 @@ WHERE
     });
 };
 
-exports.insertCommentByArticleID = (id, theBody) => {
-  const { username, body } = theBody;
+exports.insertCommentByArticleID = (id, username, body) => {
+ 
 
   return db
     .query(
