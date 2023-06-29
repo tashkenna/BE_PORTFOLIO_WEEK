@@ -38,6 +38,22 @@ ORDER BY articles.created_at DESC
     });
 };
 
+exports.selectUsers = () => {
+  return db
+  .query(
+    `SELECT users.username,
+    users.name,
+    users.avatar_url FROM users;
+
+    `
+  )
+  .then(({rows}) => {
+    
+    return rows
+  }) 
+}
+
+
 exports.selectArticlesByID = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [id])
