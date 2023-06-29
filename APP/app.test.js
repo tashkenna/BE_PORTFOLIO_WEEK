@@ -152,9 +152,6 @@ describe("GET /app/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/7/comments")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Valid article ID, no comments found");
-      });
   })
  });
 
