@@ -69,13 +69,3 @@ exports.postCommentByArticleID = (req, res, next) => {
 };
 
 
-exports.deleteCommentByCommentID = (req, res, next) => {
-  const {comment_id} = req.params
-  removeCommentByCommentID(comment_id)
-  .then((comment) => {
-    res.status(204).send({comment})
-  })
-  .catch((err) => {
-    next(err)
-  })
-}

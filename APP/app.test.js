@@ -244,29 +244,4 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("DELETE /api/comments/:comment_id", () => {
-  it("Should delete given comment by comment_id", () => {
-    return request(app)
-    .delete("/api/comments/1")
-    .expect(204)
-    .then(({body}) => {
-      expect(body).toEqual({})
-    })
-  });
-  it("Return 400 error for invalid comment ID", () => {
-    return request(app)
-    .delete("/api/comments/twelve")
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toEqual("Invalid ID type")
-    })
-  });
-  it("Return 400 error for invalid comment ID", () => {
-    return request(app)
-    .delete("/api/comments/120")
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toEqual("Valid ID type but no comment found")
-    })
-  });
-});
+

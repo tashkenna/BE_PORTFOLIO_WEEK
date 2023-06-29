@@ -18,7 +18,7 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
 app.post("/api/articles/:article_id/comments", postCommentByArticleID)
 
 
-app.delete("/api/comments/:comment_id", deleteCommentByCommentID)
+
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
