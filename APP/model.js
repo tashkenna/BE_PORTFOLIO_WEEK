@@ -70,19 +70,17 @@ WHERE
         return db
           .query("SELECT * FROM articles WHERE article_id = $1", [id])
           .then(({ rows }) => {
-            if (rows.length > 0) {
-            return Promise.reject({ status: 200, msg: "Valid article ID, no comments found" });;
+            if (rows.length === 0) {
+              return Promise.reject({ status: 404, msg: "Not found" });
             }
-            return Promise.reject({ status: 404, msg: "Not found" });
           });
       }
+      console.log(rows)
       return rows;
     });
 };
 
 exports.insertCommentByArticleID = (id, username, body) => {
- 
-
   return db
     .query(
       `INSERT INTO comments(
@@ -102,3 +100,21 @@ exports.insertCommentByArticleID = (id, username, body) => {
     });
 };
 
+exports.updateArticleById = (id, inc_votes) => {
+  return db
+    .query(
+      `
+  UPDATE articles
+  SET votes = votes + $1 
+  WHERE article_id = $2
+  RETURNING *
+  `,
+      [inc_votes, id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 400, msg: "ID does not exist" });
+      }
+      return rows[0];
+    });
+};
