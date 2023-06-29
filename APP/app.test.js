@@ -10,7 +10,6 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const descriptions = require("../endpoints.json");
 
-
 beforeEach(() => {
   return seed({ articleData, commentData, topicData, userData });
 });
@@ -77,7 +76,7 @@ describe("GET /api/articles:id", () => {
       .get("/api/articles/onetwo")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID type");
+        expect(body.msg).toBe("Bad request, invalid format");
       });
   });
 });
@@ -125,7 +124,7 @@ describe("GET /app/articles/:article_id/comments", () => {
           expect(comment).toHaveProperty("author");
           expect(comment).toHaveProperty("body");
           expect(comment).toHaveProperty("article_id");
-          expect(comment.article_id).toEqual(1)
+          expect(comment.article_id).toEqual(1);
         });
       });
   });
@@ -144,7 +143,7 @@ describe("GET /app/articles/:article_id/comments", () => {
       .get("/api/articles/invalid/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID type");
+        expect(body.msg).toBe("Bad request, invalid format");
       });
   });
 
@@ -155,9 +154,8 @@ describe("GET /app/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Valid article ID, no comments found");
       });
-  })
- });
-
+  });
+});
 
 describe("POST /api/articles/:article_id/comments", () => {
   it("Should add a comment for an article.", () => {
@@ -169,80 +167,150 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
       .expect(201)
       .then(({ body }) => {
-          expect(body).toHaveProperty("comment");
-          expect(body.comment).toHaveProperty("comment_id");
-          expect(body.comment).toHaveProperty("author");
-          expect(body.comment).toHaveProperty("body");
-          expect(body.comment).toHaveProperty("article_id");
-          expect(body.comment).toHaveProperty("created_at");
-          expect(body.comment.article_id).toEqual(1)
-          expect(body.comment.author).toEqual("lurker")
-          expect(body.comment.body).toEqual("TestComment")
-  
-        });
+        expect(body).toHaveProperty("comment");
+        expect(body.comment).toHaveProperty("comment_id");
+        expect(body.comment).toHaveProperty("author");
+        expect(body.comment).toHaveProperty("body");
+        expect(body.comment).toHaveProperty("article_id");
+        expect(body.comment).toHaveProperty("created_at");
+        expect(body.comment.article_id).toEqual(1);
+        expect(body.comment.author).toEqual("lurker");
+        expect(body.comment.body).toEqual("TestComment");
       });
-    it("Should return a 400 error if the request body is missing values", () => {
-      return request(app)
+  });
+  it("Should return a 400 error if the request body is missing values", () => {
+    return request(app)
       .post("/api/articles/1/comments")
       .send({
         body: "TestComment",
       })
       .expect(400)
-      .then(({body})=> {
+      .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
       });
-    })
+  });
 
-    it("Should return a 400 error if the username does not exist", () => {
-      return request(app)
+  it("Should return a 400 error if the username does not exist", () => {
+    return request(app)
       .post("/api/articles/1/comments")
       .send({
         username: "user123",
         body: "TestComment",
       })
       .expect(400)
-      .then(({body})=> {
+      .then(({ body }) => {
         expect(body.msg).toBe("Username does not exist");
       });
-    })
+  });
 
-    it("Should return a 400 error if ID is invalid type", () => {
-      return request(app)
+  it("Should return a 400 error if ID is invalid type", () => {
+    return request(app)
       .post("/api/articles/invalid/comments")
       .send({
         username: "lurker",
         body: "TestComment",
       })
       .expect(400)
-      .then(({body})=> {
+      .then(({ body }) => {
         expect(body.msg).toBe("Invalid ID type");
       });
-    })
+  });
 
-    it("Should return a 400 error if ID is valid type but doesn't exist", () => {
-      return request(app)
+  it("Should return a 400 error if ID is valid type but doesn't exist", () => {
+    return request(app)
       .post("/api/articles/99999/comments")
       .send({
         username: "lurker",
         body: "TestComment",
       })
       .expect(400)
-      .then(({body})=> {
+      .then(({ body }) => {
         expect(body.msg).toBe("ID does not exist");
       });
-    })
+  });
 
-    it("Responds with a 400 error if request is made with a valid body, username, but includes and extra property", () => {
-      return request(app)
+  it("Responds with a 400 error if request is made with a valid body, username, but includes and extra property", () => {
+    return request(app)
       .post("/api/articles/1/comments")
       .send({
         username: "lurker",
         body: "TestComment",
-        more: "Things"
+        more: "Things",
       })
       .expect(400)
-      .then(({body})=> {
+      .then(({ body }) => {
         expect(body.msg).toBe("Bad request, extra properties");
       });
-    })
-    })
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  it("Should update article by article_id", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: 2,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.votes).toEqual(102);
+      });
+  });
+
+  it("Should return a 400 error if article id doesn't exist", () => {
+    return request(app)
+      .patch("/api/articles/7897")
+      .send({
+        inc_votes: 2,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID does not exist");
+      });
+  });
+  it("Should return a 400 error if article id type is invalid", () => {
+    return request(app)
+      .patch("/api/articles/invalid")
+      .send({
+        inc_votes: 2,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID type");
+      });
+  });
+  it("Responds with a 400 error if request is made with a valid inc_votes but includes and extra property", () => {
+    return request(app)
+      .patch("/api/articles/1/")
+      .send({
+        inc_votes: 2,
+        body: "TestComment",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, extra properties");
+      });
+  });
+  it("Responds with a 400 error if request is in incorrect format", () => {
+    return request(app)
+      .patch("/api/articles/1/")
+      .send({
+        inc_votes: "twelve",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, invalid format");
+      });
+  });
+  it("Responds with a 400 error if amount of votes is too high", () => {
+    return request(app)
+      .patch("/api/articles/1/")
+      .send({
+        inc_votes: 384792298432,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, out of range");
+      });
+  });
+});
