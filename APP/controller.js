@@ -4,7 +4,6 @@ const {
   selectArticles,
   selectCommentsByArticleID,
   insertCommentByArticleID,
-  updateArticleById,
 } = require("./model");
 const descriptions = require("../endpoints.json");
 
@@ -55,28 +54,13 @@ exports.getCommentsByArticleID = (req, res, next) => {
 
 exports.postCommentByArticleID = (req, res, next) => {
   const { article_id } = req.params;
-  const { username, body, ...extraProp } = req.body;
+  const {username, body, ...extraProp} = req.body
   if (Object.keys(extraProp).length > 0) {
-    return res.status(400).send({ msg: "Bad request, extra properties" });
+    return res.status(400).send({msg: "Bad request, extra properties"})
   }
   insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
-    })
-    .catch((err) => {
-      next(err);
-    });
-};
-
-exports.patchCommentsByArticleID = (req, res, next) => {
-  const { article_id } = req.params;
-  const { inc_votes, ...extraProp } = req.body;
-  if (Object.keys(extraProp).length > 0) {
-    return res.status(400).send({ msg: "Bad request, extra properties" });
-  }
-  updateArticleById(article_id, inc_votes)
-    .then((article) => {
-      res.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
