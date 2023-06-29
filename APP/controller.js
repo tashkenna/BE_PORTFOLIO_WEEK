@@ -4,6 +4,7 @@ const {
   selectArticles,
   selectCommentsByArticleID,
   insertCommentByArticleID,
+  removeCommentByCommentID,
 } = require("./model");
 const descriptions = require("../endpoints.json");
 
@@ -66,3 +67,15 @@ exports.postCommentByArticleID = (req, res, next) => {
       next(err);
     });
 };
+
+
+exports.deleteCommentByCommentID = (req, res, next) => {
+  const {comment_id} = req.params
+  removeCommentByCommentID(comment_id)
+  .then((comment) => {
+    res.status(204).send({comment})
+  })
+  .catch((err) => {
+    next(err)
+  })
+}
