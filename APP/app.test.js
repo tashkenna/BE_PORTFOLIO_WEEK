@@ -10,6 +10,7 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const descriptions = require("../endpoints.json");
 
+
 beforeEach(() => {
   return seed({ articleData, commentData, topicData, userData });
 });
@@ -110,7 +111,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe("GET /app/articles/:article_id/comments", () => {
+describe.only("GET /app/articles/:article_id/comments", () => {
   it("Gets all comments for an article", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -147,15 +148,61 @@ describe("GET /app/articles/:article_id/comments", () => {
       });
   });
 
-  it("Responds with a 400 error when a valid article is requested but it doesn't have any comments yet", () => {
+  it("Responds with a 200 error when a valid article is requested but it doesn't have any comments yet", () => {
     return request(app)
       .get("/api/articles/7/comments")
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
+        expect(body.msg).toBe("Valid article ID, no comments found");
       });
   })
-});
+ });
 
 
+describe("POST /api/articles/:article_id/comments", () => {
+  it("Should add a comment for an article.", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "lurker",
+        body: "TestComment",
+      })
+      .expect(201)
+      .then(({ body }) => {
+          expect(body).toHaveProperty("comment");
+          expect(body.comment).toHaveProperty("comment_id");
+          expect(body.comment).toHaveProperty("author");
+          expect(body.comment).toHaveProperty("body");
+          expect(body.comment).toHaveProperty("article_id");
+          expect(body.comment).toHaveProperty("created_at");
+          expect(body.comment.article_id).toEqual(1)
+          expect(body.comment.author).toEqual("lurker")
+          expect(body.comment.body).toEqual("TestComment")
+  
+        });
+      });
+    it("Should return a 400 error if the request body is missing values", () => {
+      return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        body: "TestComment",
+      })
+      .expect(400)
+      .then(({body})=> {
+        expect(body.msg).toBe("Bad request");
+      });
+    })
 
+    it("Should return a 400 error if the username does not exist", () => {
+      return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "user123",
+        body: "TestComment",
+      })
+      .expect(400)
+      .then(({body})=> {
+        expect(body.msg).toBe("Username does not exist");
+      });
+    })
+    })

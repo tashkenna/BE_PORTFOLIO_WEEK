@@ -15,8 +15,6 @@ FROM
     });
 };
 
-
-
 exports.selectArticles = () => {
   return db
     .query(
@@ -51,10 +49,10 @@ exports.selectArticlesByID = (id) => {
     });
 };
 
-
 exports.selectCommentsByArticleID = (id) => {
   return db
-  .query(`SELECT
+    .query(
+      `SELECT
   comment_id,
   votes,
   created_at,
@@ -64,12 +62,42 @@ exports.selectCommentsByArticleID = (id) => {
 FROM
   comments
 WHERE
-  article_id = $1`, [id])
-  .then(({rows}) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Not found" });
-    }
-    return rows;
-  })
-}
+  article_id = $1`,
+      [id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return db
+          .query("SELECT * FROM articles WHERE article_id = $1", [id])
+          .then(({ rows }) => {
+            if (rows.length > 0) {
+            return Promise.reject({ status: 200, msg: "Valid article ID, no comments found" });;
+            }
+            return Promise.reject({ status: 404, msg: "Not found" });
+          });
+      }
+      return rows;
+    });
+};
 
+exports.insertCommentByArticleID = (id, theBody) => {
+  const { username, body } = theBody;
+
+  return db
+    .query(
+      `INSERT INTO comments(
+    author, 
+    body, 
+    article_id
+
+  ) 
+
+  VALUES ($1, $2, $3)
+  RETURNING comment_id, author, body, article_id, created_at`,
+      [username, body, id]
+    )
+
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
