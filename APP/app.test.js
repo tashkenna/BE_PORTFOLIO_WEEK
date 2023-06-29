@@ -111,7 +111,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe.only("GET /app/articles/:article_id/comments", () => {
+describe("GET /app/articles/:article_id/comments", () => {
   it("Gets all comments for an article", () => {
     return request(app)
       .get("/api/articles/1/comments")
