@@ -268,4 +268,3 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(body.msg).toEqual("Valid ID type but no comment found")
     })
   });
-});
