@@ -4,7 +4,8 @@ const {
   selectArticles,
   selectCommentsByArticleID,
   insertCommentByArticleID,
-  removeCommentByCommentID
+  removeCommentByCommentID,
+  selectUsers
 } = require("./model");
 const descriptions = require("../endpoints.json");
 
@@ -30,6 +31,19 @@ exports.getArticles = (req, res) => {
       console.log(err);
     });
 };
+
+exports.getUsers = (req, res, next) => {
+
+  selectUsers()
+  .then((users) => {
+    res.status(200).send({users})
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
+
+
 
 exports.getArticlesByID = (req, res, next) => {
   const { article_id } = req.params;

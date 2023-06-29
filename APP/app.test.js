@@ -111,6 +111,22 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("GET /api/users", () => {
+  it("Responds with an array of user objects, with properties username, name, avatar_url", () => {
+    return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.users.length).toEqual(4);
+      body.users.forEach((user) => {
+        expect(user).toHaveProperty("username");
+        expect(user).toHaveProperty("name");
+        expect(user).toHaveProperty("avatar_url");
+      });
+    });
+  })
+})
+
 describe("GET /app/articles/:article_id/comments", () => {
   it("Gets all comments for an article", () => {
     return request(app)
@@ -268,3 +284,5 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(body.msg).toEqual("Valid ID type but no comment found")
     })
   });
+
+
