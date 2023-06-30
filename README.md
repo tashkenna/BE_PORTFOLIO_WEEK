@@ -28,7 +28,6 @@ To seed the local database, run *npm run seed*, this will run the file /db/seeds
 **Testing suite**
 To run the testing suite, run *npm run test* in the terminal. 
 
-
 **The minimum versions of Node.js and Postgres needed to run this project are:**
 Node.js: v18.15.0
 Postgres: 14.8 (Homebrew)
