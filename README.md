@@ -1,4 +1,4 @@
-**Hosted version:** https://be-nc-news-f47c.onrender.com
+**Hosted version:** https://be-nc-news-f47c.onrender.com/api
 
 This project provides the ability to store information on various articles in a database, and the API is build to enable others to access the application data programatically.
 
