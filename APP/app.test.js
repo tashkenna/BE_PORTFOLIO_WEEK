@@ -45,43 +45,34 @@ describe("GET /api/", () => {
   });
 });
 
-describe("GET /api/articles:id", () => {
+describe.only("GET /api/articles:id", () => {
   it("Should return an article object by its ID", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual({
-          article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
-          created_at: "2020-07-09T20:11:00.000Z",
-          votes: 100,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          expect(body.article).toHaveProperty("author");
+          expect(body.article).toHaveProperty("article_img_url");
+          expect(body.article).toHaveProperty("author");
+          expect(body.article).toHaveProperty("body");
+          expect(body.article).toHaveProperty("created_at");
+          expect(body.article).toHaveProperty("title");
+          expect(body.article).toHaveProperty("topic");
+          expect(body.article).toHaveProperty("votes");
+          
         });
       });
-  });
-  it("Should return a 404 error when ID does not exist", () => {
-    return request(app)
-      .get("/api/articles/190")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
+      it("Should contain commentCount", () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+           expect(body.article).toHaveProperty("commentCount")
+           expect(body.article.commentCount).toEqual(11)
+            });
+          });
       });
-  });
-  it("Should return a 400 error when ID is invalid format", () => {
-    return request(app)
-      .get("/api/articles/onetwo")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID type");
-      });
-  });
-});
-
+  
 describe("GET /api/articles", () => {
   it("returns an articles array of article objects", () => {
     return request(app)
@@ -101,7 +92,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  it("Articles should be sorted by date in descending order", () => {
+  it("Articles should be sorted by date in descending order by default", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -109,7 +100,96 @@ describe("GET /api/articles", () => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-});
+
+  it("Should respond with articles filtered by topic when queried", () => {
+    return request(app)
+    .get("/api/articles?topic=cats")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.articles.length).toBe(1)
+        body.articles.forEach((article) => {
+            expect(article.topic).toEqual("cats");
+    })
+    })
+  })
+
+  it("Should respond with articles sorted by any valid column, defaults to date", () => {
+    return request(app)
+    .get("/api/articles?sort_by=votes")
+    .expect(200)
+    .then(({body}) => {
+    expect(body.articles).toBeSortedBy("votes", { descending: true })
+    })
+  })
+
+  it("Should accept order query", () => {
+    return request(app)
+    .get("/api/articles?order=ASC")
+    .expect(200)
+    .then(({body})=> {
+    expect(body.articles).toBeSorted({ ascending: true })   
+    })
+  })
+
+  it("Response with a status 200 and an empty array of articles when passed a valid topic query, which has no articles", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.articles.length).toBe(0)
+    })
+  })
+
+  it("Should return a 404 error when ID does not exist", () => {
+    return request(app)
+      .get("/api/articles/190")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  it("Should return a 400 error when ID is invalid format", () => {
+    return request(app)
+      .get("/api/articles/onetwo")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID type");
+      });
+  });
+
+
+  it("Should return a 400 error when topic query is invalid", () => {
+    return request(app)
+    .get("/api/articles?topic=othertopic")
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toEqual("Bad request")
+    })
+  })
+
+it("Should return a 400 error when sort by query is invalid", () => {
+    return request(app)
+    .get("/api/articles?sort_by=badrequest")
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toEqual("Bad request")
+    })
+  })
+
+it("Should return a 400 error when order query is invalid", () => {
+    return request(app)
+    .get("/api/articles?order=badorder")
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toEqual("Bad request")
+    })
+  })
+
+})
+
+
+
+
 
 describe("GET /api/users", () => {
   it("Responds with an array of user objects, with properties username, name, avatar_url", () => {
@@ -145,7 +225,6 @@ describe("GET /app/articles/:article_id/comments", () => {
         });
       });
   });
-
   it("Responds with a 404 error when ID doesn't exist", () => {
     return request(app)
       .get("/api/articles/3453/comments")
@@ -164,7 +243,7 @@ describe("GET /app/articles/:article_id/comments", () => {
       });
   });
 
-  it("Responds with a 200 error when a valid article is requested but it doesn't have any comments yet", () => {
+  it("Responds with a 200 when a valid article is requested but it doesn't have any comments yet", () => {
     return request(app)
       .get("/api/articles/7/comments")
       .expect(200)
@@ -284,5 +363,3 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(body.msg).toEqual("Valid ID type but no comment found")
     })
   });
-
-

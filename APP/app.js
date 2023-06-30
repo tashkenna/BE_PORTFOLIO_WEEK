@@ -1,7 +1,6 @@
 const express = require("express");
 const { getTopics, getArticlesByID, getArticles, getUsers, getApi, getCommentsByArticleID, postCommentByArticleID, deleteCommentByCommentID } = require("./controller");
 const app = express();
-const descriptions = require("../endpoints.json");
 const { handlePsqlErrors } = require("./handlePsqlErrors");
 
 app.use(express.json());
