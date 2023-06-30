@@ -101,7 +101,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  it("Articles should be sorted by date in descending order", () => {
+  it("Articles should be sorted by date in descending order by default", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -109,7 +109,50 @@ describe("GET /api/articles", () => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-});
+
+  it("Should respond with articles filtered by topic when queried", () => {
+    return request(app)
+    .get("/api/articles?topic=cats")
+    .expect(200)
+    .then(({body}) => {
+        body.articles.forEach((article) => {
+            expect(article.topic).toEqual("cats");
+    })
+    })
+  })
+  it("Should return a 400 error when query is invalid", () => {
+    return request(app)
+    .get("/api/articles?topic=othertopic")
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toEqual("Bad request")
+    })
+  })
+
+  it("Should respond with articles sorted by any valid column, defaults to date", () => {
+    return request(app)
+    .get("/api/articles?sort_by=votes")
+    .expect(200)
+    .then(({body}) => {
+    expect(body.articles).toBeSortedBy("votes", { descending: true })
+    })
+  })
+
+
+it("Should return a 400 error when query is invalid", () => {
+    return request(app)
+    .get("/api/articles?sort_by=badrequest")
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toEqual("Bad request")
+    })
+  })
+
+})
+
+
+
+
 
 describe("GET /api/users", () => {
   it("Responds with an array of user objects, with properties username, name, avatar_url", () => {
@@ -145,7 +188,6 @@ describe("GET /app/articles/:article_id/comments", () => {
         });
       });
   });
-
   it("Responds with a 404 error when ID doesn't exist", () => {
     return request(app)
       .get("/api/articles/3453/comments")
@@ -284,5 +326,3 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(body.msg).toEqual("Valid ID type but no comment found")
     })
   });
-
-

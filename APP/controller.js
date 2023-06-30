@@ -22,13 +22,15 @@ exports.getTopics = (req, res) => {
     });
 };
 
-exports.getArticles = (req, res) => {
-  selectArticles()
+exports.getArticles = (req, res, next) => {
+  const {topic, sort_by, order} = req.query
+  selectArticles(topic, sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
     .catch((err) => {
-      console.log(err);
+    console.log(err)
+      next(err)
     });
 };
 
@@ -42,8 +44,6 @@ exports.getUsers = (req, res, next) => {
     console.log(err)
   })
 }
-
-
 
 exports.getArticlesByID = (req, res, next) => {
   const { article_id } = req.params;

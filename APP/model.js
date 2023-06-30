@@ -15,7 +15,8 @@ FROM
     });
 };
 
-exports.selectArticles = () => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "DESC") => {
+
   return db
     .query(
       `SELECT articles.author, 
@@ -28,12 +29,16 @@ exports.selectArticles = () => {
     COUNT(comments.comment_id) AS comment_count
 FROM articles
 LEFT JOIN comments ON articles.article_id = comments.article_id
+ ${topic ? `WHERE articles.topic = '${topic}'` : ""}
 GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-ORDER BY articles.created_at DESC
+ORDER BY ${sort_by} ${order}
 ;
   `
     )
     .then(({ rows }) => {
+      if(rows.length === 0){
+        return Promise.reject({ status: 400, msg: "Bad request" })
+      }
       return rows;
     });
 };
