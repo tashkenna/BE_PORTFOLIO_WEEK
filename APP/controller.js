@@ -5,7 +5,7 @@ const {
   selectCommentsByArticleID,
   insertCommentByArticleID,
   removeCommentByCommentID,
-  selectUsers
+  selectUsers, countComments
 } = require("./model");
 const descriptions = require("../endpoints.json");
 
@@ -26,9 +26,11 @@ exports.getArticles = (req, res, next) => {
   const {topic, sort_by, order} = req.query
   selectArticles(topic, sort_by, order)
     .then((articles) => {
+      console.log(articles)
       res.status(200).send({ articles });
     })
     .catch((err) => {
+      console.log(err)
       next(err)
     });
 };
@@ -44,13 +46,28 @@ exports.getUsers = (req, res, next) => {
   })
 }
 
+// exports.getArticlesByID = (req, res, next) => {
+//   const { article_id } = req.params;
+//   selectArticlesByID(article_id)
+//     .then((article) => {
+//       res.status(200).send({ article });
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+// };
+
 exports.getArticlesByID = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticlesByID(article_id)
-    .then((article) => {
-      res.status(200).send({ article });
+  
+  Promise.all([selectArticlesByID(article_id), countComments(article_id)])
+  
+    .then(([article, commentCount]) => {
+      const articleCount = {...article, commentCount: +commentCount}
+      res.status(200).send({ article : articleCount });
     })
     .catch((err) => {
+      console.log(err)
       next(err);
     });
 };

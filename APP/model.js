@@ -36,12 +36,20 @@ ORDER BY ${sort_by} ${order}
   `
     )
     .then(({ rows }) => {
-      if(rows.length === 0){
-        return Promise.reject({ status: 400, msg: "Bad request" })
-      }
+        if(rows.length === 0){
+        return db.query(`SELECT * FROM topics WHERE topics.slug = '${topic}';`)
+        .then(({rows})=> {
+        if(rows.length === 0) {
+        return Promise.reject({ status: 400, msg: "Bad request" });
+        } return []
+      })
+      } 
+   
       return rows;
     });
 };
+
+
 
 exports.selectUsers = () => {
   return db
@@ -61,7 +69,7 @@ exports.selectUsers = () => {
 
 exports.selectArticlesByID = (id) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [id])
+    .query(`SELECT * FROM articles WHERE articles.article_id = $1`, [id])
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Not found" });
@@ -69,6 +77,19 @@ exports.selectArticlesByID = (id) => {
       return rows[0];
     });
 };
+
+exports.countComments = (articleID) => {
+  return db
+  .query(`SELECT COUNT(*) AS comment_count
+  FROM comments
+  WHERE comments.article_id = $1;
+`,
+  [articleID]
+  )
+  .then(({rows})=> {
+    return rows[0].comment_count;
+  })
+}
 
 exports.selectCommentsByArticleID = (id) => {
   return db
