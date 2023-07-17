@@ -5,7 +5,7 @@ const {
   selectCommentsByArticleID,
   insertCommentByArticleID,
   removeCommentByCommentID,
-  selectUsers, countComments
+  selectUsers, countComments, updateCommentVotes, updateArticleById
 } = require("./model");
 const descriptions = require("../endpoints.json");
 
@@ -95,3 +95,19 @@ exports.deleteCommentByCommentID = (req, res, next) => {
     next(err)
   })
 }
+
+
+exports.patchArticleByArticleID= (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes, ...extraProp } = req.body;
+  if (Object.keys(extraProp).length > 0) {
+    return res.status(400).send({ msg: "Bad request, extra properties" });
+  }
+  updateArticleById(article_id, inc_votes)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

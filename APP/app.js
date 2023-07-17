@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, getArticlesByID, getArticles, getUsers, getApi, getCommentsByArticleID, postCommentByArticleID, deleteCommentByCommentID } = require("./controller");
+const { getTopics, getArticlesByID, getArticles, getUsers, getApi, getCommentsByArticleID, postCommentByArticleID, deleteCommentByCommentID, addVotesToComment, patchArticleByArticleID } = require("./controller");
 const app = express();
 const { handlePsqlErrors } = require("./handlePsqlErrors");
 const cors = require('cors')
@@ -24,6 +24,7 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleID)
 
 app.delete("/api/comments/:comment_id", deleteCommentByCommentID)
 
+app.patch("/api/articles/:article_id", patchArticleByArticleID);
 
 
 app.use(handlePsqlErrors);

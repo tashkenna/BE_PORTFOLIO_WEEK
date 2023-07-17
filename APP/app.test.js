@@ -363,3 +363,65 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(body.msg).toEqual("Valid ID type but no comment found")
     })
   });
+
+
+  describe.only("PATCH /api/articles/:article_id", () => {
+    it("Should update article by article_id", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: 2,
+        })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.votes).toEqual(102);
+        });
+    });
+  
+    it("Should return a 400 error if article id doesn't exist", () => {
+      return request(app)
+        .patch("/api/articles/7897")
+        .send({
+          inc_votes: 2,
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("ID does not exist");
+        });
+    });
+    it("Should return a 400 error if article id type is invalid", () => {
+      return request(app)
+        .patch("/api/articles/invalid")
+        .send({
+          inc_votes: 2,
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid ID type");
+        });
+    });
+    it("Responds with a 400 error if request is made with a valid inc_votes but includes and extra property", () => {
+      return request(app)
+        .patch("/api/articles/1/")
+        .send({
+          inc_votes: 2,
+          body: "TestComment",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request, extra properties");
+        });
+    });
+    it("Responds with a 400 error if request is in incorrect format", () => {
+      return request(app)
+        .patch("/api/articles/1/")
+        .send({
+          inc_votes: "twelve",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid ID type");
+        });
+    });
+   
+  });
