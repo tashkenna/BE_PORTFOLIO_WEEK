@@ -134,7 +134,7 @@ exports.insertCommentByArticleID = (id, username, body) => {
   ) 
 
   VALUES ($1, $2, $3)
-  RETURNING comment_id, author, body, article_id, created_at`,
+  RETURNING comment_id, author, body, article_id, created_at, votes`,
       [username, body, id]
     )
 
@@ -151,8 +151,8 @@ exports.removeCommentByCommentID = (id) => {
   WHERE comment_id = $1 
   RETURNING *
   `, [id])
-  .then(({row}) => {
-    if (row === undefined) {
+  .then(({rows}) => {
+    if (rows === undefined) {
       return db
         .query("SELECT * FROM comments WHERE article_id = $1", [id])
         .then(({ rows }) => {
