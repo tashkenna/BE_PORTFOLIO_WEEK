@@ -161,9 +161,9 @@ describe("GET /api/articles", () => {
   it("Should return a 400 error when topic query is invalid", () => {
     return request(app)
     .get("/api/articles?topic=othertopic")
-    .expect(400)
+    .expect(404)
     .then(({body}) => {
-        expect(body.msg).toEqual("Bad request")
+        expect(body.msg).toEqual("Not found")
     })
   })
 

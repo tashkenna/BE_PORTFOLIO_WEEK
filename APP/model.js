@@ -40,7 +40,7 @@ ORDER BY ${sort_by} ${order}
         return db.query(`SELECT * FROM topics WHERE topics.slug = '${topic}';`)
         .then(({rows})=> {
         if(rows.length === 0) {
-        return Promise.reject({ status: 400, msg: "Bad request" });
+        return Promise.reject({ status: 404, msg: "Not found" });
         } return []
       })
       } 
