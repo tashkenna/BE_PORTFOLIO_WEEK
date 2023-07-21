@@ -365,7 +365,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 
 
-  describe.only("PATCH /api/articles/:article_id", () => {
+  describe("PATCH /api/articles/:article_id", () => {
     it("Should update article by article_id", () => {
       return request(app)
         .patch("/api/articles/1")
