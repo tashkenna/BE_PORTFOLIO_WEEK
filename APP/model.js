@@ -152,7 +152,7 @@ exports.removeCommentByCommentID = (id) => {
   RETURNING *
   `, [id])
   .then(({rows}) => {
-    if (rows === undefined) {
+    if (rows.length === 0) {
       return db
         .query("SELECT * FROM comments WHERE article_id = $1", [id])
         .then(({ rows }) => {
